@@ -443,6 +443,10 @@ public class CS2Compiler {
                         instructions.add(new IntInstruction(Opcodes.POP_LONG, 0));
                     }
                 }
+            } catch (Exception e) {
+                String message = "Error compiling CallExpressionNode expression:\n" + expression;
+                System.err.println(message);
+                throw new RuntimeException(message + "\n" + e.getMessage(), e);
             }
         } else if (expression instanceof CallbackExpressionNode) {
             assert !pop : "Not a statement " + expression;
@@ -459,6 +463,17 @@ public class CS2Compiler {
                         types.append(carg.charDesc);
                     }
                 }
+                if (callback.trigger != null) {
+                    compileExpression(callback.trigger);
+                    instructions.add(new IntInstruction(Opcodes.PUSH_INT, callback.trigger.arguments.size()));
+                    types.append("Y");
+                }
+
+                instructions.add(new StringInstruction(Opcodes.PUSH_STRING, types.toString()));
+            } catch (Exception e) {
+                String message = "Error compiling CallbackExpressionNode expression:\n" + expression;
+                System.err.println(message);
+                throw new RuntimeException(message + "\n" + e.getMessage(), e);
             }
             if (callback.trigger != null) {
                 compileExpression(callback.trigger);
@@ -474,20 +489,26 @@ public class CS2Compiler {
             }
         } else if (expression instanceof MathExpressionNode) {
             assert !pop : "Not a statement " + expression;
-            MathExpressionNode math = (MathExpressionNode) expression;
-            if (math.operator == Operator.DIV && math.getLeft() instanceof MathExpressionNode && ((MathExpressionNode) math.getLeft()).operator == Operator.MUL) {
-                //Optimization for MULDIV opcode 4018 ('scale')
-                MathExpressionNode left = (MathExpressionNode) math.getLeft();
-                compileExpression(left.getLeft());
-                compileExpression(math.getRight());
-                compileExpression(left.getRight());
-                instructions.add(new BooleanInstruction(4018, false));
-            } else {
-                //Normal math
-                compileExpression(math.getLeft());
-                compileExpression(math.getRight());
-                int op = math.operator == Operator.REM ? 4011 : 4000 + math.operator.ordinal();
-                instructions.add(new BooleanInstruction(op, false));
+            try {
+                MathExpressionNode math = (MathExpressionNode) expression;
+                if (math.operator == Operator.DIV && math.getLeft() instanceof MathExpressionNode && ((MathExpressionNode) math.getLeft()).operator == Operator.MUL) {
+                    //Optimization for MULDIV opcode 4018 ('scale')
+                    MathExpressionNode left = (MathExpressionNode) math.getLeft();
+                    compileExpression(left.getLeft());
+                    compileExpression(math.getRight());
+                    compileExpression(left.getRight());
+                    instructions.add(new BooleanInstruction(4018, false));
+                } else {
+                    //Normal math
+                    compileExpression(math.getLeft());
+                    compileExpression(math.getRight());
+                    int op = math.operator == Operator.REM ? 4011 : 4000 + math.operator.ordinal();
+                    instructions.add(new BooleanInstruction(op, false));
+                }
+            } catch (Exception e) {
+                String message = "Error compiling MathExpressionNode expression:\n" + expression;
+                System.err.println(message);
+                throw new RuntimeException(message + "\n" + e.getMessage(), e);
             }
         } else if (expression instanceof PlaceholderValueNode) {
             assert !pop : "Not a statement " + expression;
