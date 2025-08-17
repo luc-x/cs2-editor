@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
-    id("org.openjfx.javafxplugin") version "0.1.0"
+    kotlin("jvm") version "1.9.0"
+    id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
 val gprUser: String? = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME") ?: System.getenv("GITHUB_ACTOR")
@@ -21,7 +21,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("com.displee:disio:2.2")
-    implementation("com.displee:rs-cache-library:6.8.1")
+    implementation("com.displee:rs-cache-library:7.3.0")
+//    if (gprUser != null && gprKey != null) {
+//        implementation("io.blurite:rscm:1.0")
+//    }
     implementation("org.fxmisc.richtext:richtextfx:0.10.9")
     implementation("com.google.code.gson:gson:2.9.0")
 }

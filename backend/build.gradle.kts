@@ -1,11 +1,11 @@
 plugins {
-    `maven-publish`
-    kotlin("jvm") version "1.9.24"
+    'maven-publish'
+    kotlin("jvm") version "1.9.0"
 }
 
 dependencies {
     implementation("com.displee:disio:2.2")
-    implementation("com.displee:rs-cache-library:6.8.1")
+    implementation("com.displee:rs-cache-library:7.3.0")
     implementation("org.apache.commons:commons-lang3:3.12.0")
 }
 
