@@ -1,5 +1,5 @@
 plugins {
-    'maven-publish'
+    `maven-publish`
     kotlin("jvm") version "1.9.0"
 }
 
